@@ -18,6 +18,7 @@
     import CollectionDocsPanel from "@/components/collections/CollectionDocsPanel.svelte";
     import RecordUpsertPanel from "@/components/records/RecordUpsertPanel.svelte";
     import RecordPreviewPanel from "@/components/records/RecordPreviewPanel.svelte";
+    import RecordsImportPanel from "@/components/records/RecordsImportPanel.svelte";
     import RecordsList from "@/components/records/RecordsList.svelte";
 
     const queryParams = new URLSearchParams($querystring);
@@ -26,6 +27,7 @@
     let collectionDocsPanel;
     let recordUpsertPanel;
     let recordPreviewPanel;
+    let recordsImportPanel;
     let recordsList;
     let filter = queryParams.get("filter") || "";
     let sort = queryParams.get("sort") || "";
@@ -140,6 +142,18 @@
                 </button>
 
                 {#if !$activeCollection.isView}
+                    <label for="import-excel-input" class="btn btn-outline">
+                        <i class="ri-upload-line" />
+                        <span class="txt">Import Excel</span>
+                    </label>
+                    <input
+                        class="hidden"
+                        id="import-excel-input"
+                        type="file"
+                        accept=".xls,.xlsx,.csv"
+                        on:click={(e) => (e.currentTarget.value = null)}
+                        on:change={(e) => recordsImportPanel.show(e.currentTarget.files[0])}
+                    />
                     <button type="button" class="btn btn-expanded" on:click={() => recordUpsertPanel?.show()}>
                         <i class="ri-add-line" />
                         <span class="txt">New record</span>
@@ -179,6 +193,12 @@
     collection={$activeCollection}
     on:save={() => recordsList?.reloadLoadedPages()}
     on:delete={() => recordsList?.reloadLoadedPages()}
+/>
+
+<RecordsImportPanel
+    bind:this={recordsImportPanel}
+    collection={$activeCollection}
+    on:save={() => recordsList?.reloadLoadedPages()}
 />
 
 <RecordPreviewPanel bind:this={recordPreviewPanel} collection={$activeCollection} />
